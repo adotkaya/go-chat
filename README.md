@@ -29,11 +29,58 @@ A real-time chat application built with Go, featuring WebSocket-based messaging,
 
 ## Prerequisites
 
+**With Docker (Recommended - Easiest):**
+- Docker Desktop or Docker Engine
+- docker-compose
+
+**Without Docker:**
 - Go 1.24 or higher
 - PostgreSQL 12 or higher
 - Make (optional, for convenience commands)
 
 ## Quick Start
+
+### Option 1: Using Docker (Recommended) 🐳
+
+The easiest way to run the application - everything is configured automatically!
+
+```bash
+# 1. Clone the repository
+git clone https://github.com/drazan344/go-chat.git
+cd go-chat
+
+# 2. Start everything with one command
+docker-compose up
+
+# That's it! Open http://localhost:8080 in your browser
+```
+
+**What Docker does for you:**
+- ✅ Automatically sets up PostgreSQL database
+- ✅ Runs database migrations
+- ✅ Builds and starts the Go application
+- ✅ No need to install Go or PostgreSQL locally
+- ✅ Consistent environment across all machines
+
+**Useful Docker commands:**
+```bash
+# Start in detached mode (background)
+docker-compose up -d
+
+# View logs
+docker-compose logs -f app
+
+# Stop everything
+docker-compose down
+
+# Rebuild after code changes
+docker-compose up --build
+
+# Remove all data (fresh start)
+docker-compose down -v
+```
+
+### Option 2: Manual Setup (Without Docker)
 
 ### 1. Clone and Install Dependencies
 

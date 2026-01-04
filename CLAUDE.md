@@ -4,6 +4,36 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Build and Run Commands
 
+### Using Docker (Recommended)
+
+**Start everything (one command):**
+```bash
+docker-compose up
+# Or in background: docker-compose up -d
+```
+
+**View logs:**
+```bash
+docker-compose logs -f app
+```
+
+**Stop everything:**
+```bash
+docker-compose down
+```
+
+**Rebuild after changes:**
+```bash
+docker-compose up --build
+```
+
+**Fresh start (remove all data):**
+```bash
+docker-compose down -v
+```
+
+### Without Docker
+
 **Build the application:**
 ```bash
 go build -o bin/chat cmd/api/*.go
@@ -237,8 +267,46 @@ This codebase demonstrates:
 - Concurrency patterns explained (goroutines, channels, fan-out)
 - Best practices highlighted throughout
 
+## Docker Setup
+
+**Docker Compose Configuration:**
+
+The `docker-compose.yml` defines two services:
+1. **db** - PostgreSQL 15 Alpine with health checks
+2. **app** - Go application with automatic migration on startup
+
+**Multi-Stage Dockerfile:**
+- Stage 1 (builder): Compiles Go binaries with optimizations
+- Stage 2 (runtime): Minimal Alpine image with only runtime dependencies
+- Non-root user for security
+- Binary size reduced with `-ldflags="-w -s"`
+
+**Entrypoint Script:**
+- Waits for PostgreSQL to be ready (using netcat)
+- Runs database migrations automatically
+- Starts the application
+
+**Benefits:**
+- No local Go or PostgreSQL installation needed
+- Isolated environment (no conflicts with other projects)
+- Consistent setup across all machines
+- Production-ready containerization
+- Easy deployment to cloud platforms
+
+**Docker Files:**
+- `Dockerfile` - Multi-stage build for Go app
+- `docker-compose.yml` - Orchestrates app + database
+- `.dockerignore` - Excludes unnecessary files from build
+- `entrypoint.sh` - Startup script with DB wait + migrations
+
 ## Environment Setup
 
+### With Docker (Recommended):
+1. Install Docker Desktop
+2. Run: `docker-compose up`
+3. Open browser to http://localhost:8080
+
+### Without Docker:
 1. Install Go 1.24+
 2. Install PostgreSQL
 3. Create database: `createdb gochat`

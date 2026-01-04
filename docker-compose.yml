@@ -1,0 +1,58 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  db:
+    image: postgres:15-alpine
+    container_name: gochat-db
+    environment:
+      POSTGRES_USER: chatuser
+      POSTGRES_PASSWORD: chatpassword
+      POSTGRES_DB: gochat
+    ports:
+      - "5432:5432"
+    volumes:
+      # Persist database data
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U chatuser -d gochat"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - gochat-network
+
+  # Go Chat Application
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: gochat-app
+    environment:
+      # Server config
+      ADDR: ":8080"
+
+      # Database config
+      DB_ADDR: "postgres://chatuser:chatpassword@db:5432/gochat?sslmode=disable"
+      DB_MAX_OPEN_CONNS: 25
+      DB_MAX_IDLE_CONNS: 25
+      DB_MAX_IDLE_TIME: "5m"
+
+      # Auth config
+      JWT_SECRET: "your-super-secret-jwt-key-change-in-production"
+    ports:
+      - "8080:8080"
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - gochat-network
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+    driver: local
+
+networks:
+  gochat-network:
+    driver: bridge

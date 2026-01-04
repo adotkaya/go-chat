@@ -1,0 +1,57 @@
+# Git
+.git
+.gitignore
+
+# Environment files (use docker-compose env instead)
+.env
+.env.local
+
+# Build artifacts
+bin/
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.claude/
+
+# OS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Temp files
+tmp/
+*.tmp
+*.log
+logs/
+log/
+
+# Documentation (not needed in container)
+README.md
+CLAUDE.md
+*.md
+
+# Docker files (don't copy into build context)
+Dockerfile
+docker-compose.yml
+.dockerignore
+
+# Go workspace
+go.work
+
+# Air live reload
+.air.toml
