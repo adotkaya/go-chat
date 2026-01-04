@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Terminal Chat</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <!-- Auth Modal (shown when not logged in) -->
+    <div id="auth-modal" class="modal">
+        <div class="terminal-window">
+            <div class="terminal-header">SYSTEM LOGIN REQUIRED</div>
+            <div class="terminal-body">
+                <div id="login-form" class="form">
+                    <h3>&gt; LOGIN</h3>
+                    <input type="email" id="login-email" placeholder="email@example.com" autocomplete="email">
+                    <input type="password" id="login-password" placeholder="password" autocomplete="current-password">
+                    <button id="login-btn">LOGIN</button>
+                    <p class="link">Don't have an account? <a href="#" id="show-register">Register</a></p>
+                    <div id="login-error" class="error"></div>
+                </div>
+                <div id="register-form" class="form" style="display:none">
+                    <h3>&gt; REGISTER</h3>
+                    <input type="text" id="register-username" placeholder="username" autocomplete="username">
+                    <input type="email" id="register-email" placeholder="email@example.com" autocomplete="email">
+                    <input type="password" id="register-password" placeholder="password (min 6 chars)" autocomplete="new-password">
+                    <button id="register-btn">REGISTER</button>
+                    <p class="link">Already have an account? <a href="#" id="show-login">Login</a></p>
+                    <div id="register-error" class="error"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Chat Interface -->
+    <div id="chat-app" style="display:none">
+        <div class="terminal-container">
+            <!-- Sidebar - Room List -->
+            <div class="sidebar">
+                <div class="terminal-header">
+                    <span>CHANNELS</span>
+                    <button id="logout-btn" class="small-btn">LOGOUT</button>
+                </div>
+                <div id="room-list" class="room-list"></div>
+                <div class="sidebar-footer">
+                    <button id="create-room-btn">+ NEW CHANNEL</button>
+                </div>
+            </div>
+
+            <!-- Chat Area -->
+            <div class="chat-area">
+                <div class="terminal-header">
+                    <span id="current-room-name">&gt; SELECT A CHANNEL</span>
+                </div>
+                <div id="messages" class="messages"></div>
+                <div class="message-input">
+                    <span class="prompt">&gt;</span>
+                    <input type="text" id="message-field" placeholder="Type your message..." disabled>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Create Room Modal -->
+    <div id="create-room-modal" class="modal" style="display:none">
+        <div class="terminal-window small">
+            <div class="terminal-header">CREATE NEW CHANNEL</div>
+            <div class="terminal-body">
+                <input type="text" id="room-name" placeholder="channel-name">
+                <input type="text" id="room-description" placeholder="Description (optional)">
+                <div class="button-group">
+                    <button id="create-room-submit">CREATE</button>
+                    <button id="create-room-cancel" class="secondary">CANCEL</button>
+                </div>
+                <div id="create-room-error" class="error"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/js/auth.js"></script>
+    <script src="/static/js/websocket.js"></script>
+    <script src="/static/js/chat.js"></script>
+    <script src="/static/js/app.js"></script>
+</body>
+</html>

@@ -1,78 +1,202 @@
 # Go Chat Application
 
-A real-time chat application built with Go using the Chi router framework.
+A real-time chat application built with Go, featuring WebSocket-based messaging, JWT authentication, and a retro terminal-style UI.
 
-## Current Phase: Basic HTTP Server Setup
+## Features
 
-### What's Implemented
+- **Real-time Messaging**: WebSocket-based chat with instant message delivery
+- **Public Chat Rooms**: Create and join named chat rooms (like Slack/Discord)
+- **Full Authentication**: Email/password registration and login with JWT tokens
+- **Terminal-Style UI**: Cool retro aesthetic with green/amber terminal theme
+- **Message Persistence**: All messages saved to PostgreSQL database
+- **Room Management**: Create rooms, join/leave rooms, view room lists
+- **Educational Code**: Well-commented, clean code suitable for learning
 
-- **HTTP Server Foundation**: Basic HTTP server with Chi router and middleware
-- **Health Check Endpoint**: `/v1/health` endpoint for monitoring server status
-- **Environment Configuration**: Configurable server address via environment variables
-- **Graceful Server Management**: Proper timeouts and server configuration
+## Tech Stack
 
-### Project Structure
+**Backend:**
+- Go 1.24.5
+- Chi Router v5 - HTTP routing and middleware
+- PostgreSQL - Data persistence
+- WebSockets (gorilla/websocket) - Real-time communication
+- JWT (golang-jwt/jwt) - Authentication tokens
+- bcrypt - Password hashing
+
+**Frontend:**
+- Vanilla JavaScript (no frameworks)
+- Pure CSS (terminal theme)
+- WebSocket API
+
+## Prerequisites
+
+- Go 1.24 or higher
+- PostgreSQL 12 or higher
+- Make (optional, for convenience commands)
+
+## Quick Start
+
+### 1. Clone and Install Dependencies
+
+```bash
+git clone https://github.com/drazan344/go-chat.git
+cd go-chat
+go mod tidy
+```
+
+### 2. Setup Database
+
+Create a PostgreSQL database:
+
+```bash
+createdb gochat
+```
+
+Copy the example environment file and configure your database:
+
+```bash
+cp .env.example .env
+# Edit .env and update DB_ADDR with your database credentials
+```
+
+### 3. Run Migrations
+
+```bash
+make migrate-up
+# Or: go run cmd/migrate/main.go up
+```
+
+### 4. Start the Server
+
+```bash
+make run
+# Or: go run cmd/api/*.go
+```
+
+The server will start on http://localhost:8080
+
+### 5. Open in Browser
+
+Navigate to http://localhost:8080 and create an account to start chatting!
+
+## Project Structure
 
 ```
 go-chat/
-├── cmd/api/           # Application entrypoint
-│   ├── main.go       # Server startup and configuration
-│   ├── api.go        # HTTP handlers and routing
-│   └── health.go     # Health check endpoint
-├── internal/env/     # Environment variable utilities
-│   └── env.go        # Helper functions for env vars
-├── bin/              # Compiled binaries (gitignored)
-├── .env              # Environment variables
-└── go.mod            # Go module dependencies
+├── cmd/
+│   ├── api/              # HTTP server and handlers
+│   │   ├── main.go       # Application entry point
+│   │   ├── api.go        # Router and application struct
+│   │   ├── auth.go       # Authentication handlers
+│   │   ├── rooms.go      # Room management handlers
+│   │   ├── websocket.go  # WebSocket handler
+│   │   ├── middleware.go # Auth middleware
+│   │   ├── helpers.go    # Helper functions
+│   │   └── health.go     # Health check
+│   └── migrate/          # Database migration tool
+│       └── main.go
+├── internal/
+│   ├── auth/             # Authentication package
+│   │   └── auth.go       # JWT and bcrypt functions
+│   ├── db/               # Database connection
+│   │   └── db.go
+│   ├── env/              # Environment utilities
+│   │   └── env.go
+│   ├── store/            # Data access layer
+│   │   ├── storage.go    # Storage interface
+│   │   ├── users.go      # User model and store
+│   │   ├── rooms.go      # Room model and store
+│   │   ├── messages.go   # Message model and store
+│   │   └── room_members.go
+│   └── websocket/        # WebSocket hub pattern
+│       ├── hub.go        # Message broadcasting hub
+│       └── client.go     # WebSocket client
+├── db/migrations/        # SQL migration files
+├── web/                  # Frontend files
+│   ├── index.html
+│   └── static/
+│       ├── css/
+│       │   └── style.css
+│       └── js/
+│           ├── auth.js
+│           ├── websocket.js
+│           ├── chat.js
+│           └── app.js
+├── .env.example          # Example environment variables
+├── Makefile              # Build and run commands
+├── CLAUDE.md             # Development guide
+└── README.md
 ```
 
-### Dependencies
+## API Endpoints
 
-- **Chi Router**: `github.com/go-chi/chi/v5` - HTTP router and middleware
-- **GoDotEnv**: `github.com/joho/godotenv` - Environment file loading
+### Authentication (Public)
+- `POST /v1/auth/register` - Register new user
+- `POST /v1/auth/login` - Login and receive JWT token
 
-### Configuration
+### Authentication (Protected)
+- `GET /v1/auth/me` - Get current user info
 
-The application uses environment variables for configuration:
+### Rooms (Protected)
+- `GET /v1/rooms` - List all rooms
+- `POST /v1/rooms` - Create new room
+- `GET /v1/rooms/{id}` - Get room details
+- `POST /v1/rooms/{id}/join` - Join a room
+- `POST /v1/rooms/{id}/leave` - Leave a room
+- `GET /v1/rooms/{id}/messages` - Get room message history
 
-- `ADDR`: Server address (default: `:8080`)
+### WebSocket (Protected)
+- `GET /v1/rooms/{id}/ws` - WebSocket connection for real-time chat
 
-### Running the Application
+## Makefile Commands
 
-1. **Install dependencies**:
-   ```bash
-   go mod tidy
-   ```
+```bash
+make build       # Build the application
+make run         # Run the application
+make migrate-up  # Run database migrations
+make migrate-down # Rollback last migration
+make test        # Run tests
+make clean       # Clean build artifacts
+make deps        # Install dependencies
+make setup       # Complete development setup
+```
 
-2. **Set environment variables** (optional):
-   ```bash
-   # .env file is loaded automatically
-   echo "ADDR=:3000" > .env
-   ```
+## Environment Variables
 
-3. **Build and run**:
-   ```bash
-   go build -o bin/main ./cmd/api
-   ./bin/main
-   ```
+See `.env.example` for all available configuration options.
 
-4. **Test health endpoint**:
-   ```bash
-   curl http://localhost:8080/v1/health
-   ```
+## Development
 
-### Next Steps
+This project is designed to be educational and readable. Key concepts demonstrated:
 
-- [ ] Implement WebSocket connections for real-time messaging
-- [ ] Add user authentication and session management
-- [ ] Create chat room functionality
-- [ ] Add message persistence (database integration)
-- [ ] Implement message broadcasting
-- [ ] Add frontend client interface
+- **Repository Pattern**: Clean separation of data access in `internal/store/`
+- **Middleware Chain**: Authentication and logging middleware
+- **WebSocket Hub Pattern**: Centralized message broadcasting
+- **Context Usage**: Request-scoped values and cancellation
+- **JWT Authentication**: Stateless token-based auth
+- **bcrypt**: Secure password hashing
+- **Goroutines & Channels**: Concurrent WebSocket handling
 
-### Development Notes
+## Security Notes
 
-- Server includes standard middleware: RequestID, RealIP, Logger, Recoverer, Timeout
-- Follows Go project layout conventions
-- Environment variables loaded with fallback defaults
-- Proper error handling and logging implemented
+- Passwords are hashed with bcrypt before storage
+- JWT tokens expire after 24 hours
+- SQL injection prevented through parameterized queries
+- WebSocket connections require authentication
+
+## Future Enhancements
+
+- User presence indicators
+- Typing indicators
+- File uploads
+- Direct messages
+- User profiles
+- Message editing/deletion
+- Search functionality
+
+## License
+
+MIT
+
+## Author
+
+Built as an educational project to demonstrate Go backend development and real-time web applications.
